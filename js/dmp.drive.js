@@ -100,7 +100,7 @@ dmp.drive.listFiles = function(folderId, callback, retryCounter, items, folders)
  */
 dmp.drive.getFileUrl = function(fileId, callback, retryCounter) {
   gapi.client.load('drive', 'v2', function() {
-    gapi.client.drive.files.get({'fileId': fileId}).execute(function(resp){
+    gapi.client.drive.files.get({ 'supportsTeamDrives':"true",'fileId': fileId}).execute(function(resp){
       // We got an error object back so we can check it out.
       if (resp && resp.error) {
         console.log("Error while fetching the file's metadata: "
@@ -113,6 +113,7 @@ dmp.drive.getFileUrl = function(fileId, callback, retryCounter) {
         // For any other errors we retry once.
         } else if (!retryCounter || retryCounter == 0) {
           dmp.drive.getFileUrl(fileId, callback, 1);
+          console.log("Giving it another try... :(")
         // For any other errors and we already retried we call the callback.
         } else {
           callback(null, null, resp.error, null, false, null, null, false);
@@ -136,6 +137,7 @@ dmp.drive.getFileUrl = function(fileId, callback, retryCounter) {
       // The return object has no title, maybe it;s an error so we retry.
       } else if (!retryCounter || retryCounter == 0){
         dmp.drive.getFileUrl(fileId, callback, 1);
+        console.log("Gving it another try... :'(");
       // We already retried so we simply call the callback with an error.
       } else {
         callback(null, null, {}, null, false, null, null, false);
