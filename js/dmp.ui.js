@@ -192,7 +192,7 @@ dmp.ui.buildPicker = function() {
     var videoMimeType = "video/mp4,video/x-mpeg,video/webm,video/x-flv";
 
     // Search Songs in Drive View.
-    var view = new google.picker.DocsView();
+    var view = new google.picker.DocsView().setEnableTeamDrives(true);
     view.setLabel("🔍\u00A0Search\u00A0Audio\u00A0Files");
     view.setMimeTypes(supportedMimeType);
     view.setMode(google.picker.DocsViewMode.LIST);
@@ -217,7 +217,17 @@ dmp.ui.buildPicker = function() {
   view4.setMimeTypes(dmp.playlist.PLAYLIST_MIME_TYPE + "." + dmp.APPLICATION_ID);
   view4.setMode(google.picker.DocsViewMode.LIST);
 
-
+  /*  // Picker allowing users to browse TEAMDRIVES
+    var view5 = new google.picker.DocsView();
+    view5.setLabel("📂TEAMDRIVE");
+    view5.setIncludeFolders(true);
+    view5.setParent("root");
+    view5.setMimeTypes(supportedMimeType + "," + videoMimeType);
+    view5.setMode(google.picker.DocsViewMode.LIST);
+ //   view5.setSelectFolderEnabled(dmp.testUser);
+  */
+  
+  
   var newPickerBuilder = dmp.useSandbox ? new google.picker.PickerBuilder("https://docs.sandbox.google.com/picker")
       : new google.picker.PickerBuilder();
 
@@ -233,7 +243,16 @@ dmp.ui.buildPicker = function() {
     newPickerBuilder.addView(customFolderView);
   }
 
-  var newPicker = newPickerBuilder.enableFeature(google.picker.Feature.MULTISELECT_ENABLED)
+  // Create a new VIEW 
+  /* (google team drives)
+  PickerBuilder.enableFeature(Feature)	Enable a picker feature. 
+  FEATURE = google.picker.Feature.SUPPORT_TEAM_DRIVES
+  */
+  
+  
+  var newPicker = newPickerBuilder
+  .enableFeature(google.picker.Feature.MULTISELECT_ENABLED)
+  .enableFeature(google.picker.Feature.SUPPORT_TEAM_DRIVES)
     .setAppId(dmp.APPLICATION_ID)
     .setOAuthToken(dmp.getAccessToken())
     .setOrigin(window.location.protocol + '//' + window.location.host)
