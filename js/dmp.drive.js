@@ -41,7 +41,7 @@ dmp.drive.listFiles = function(folderId, callback, retryCounter, items, folders)
   if(!folders) {
       folders = [];
   }
-  gapi.client.load('drive', 'v2', function() {
+  gapi.client.load('drive', 'v3', function() {
     gapi.client.drive.files.list({'q': "'"+folderId+"' in parents and trashed=false",'fields':'items(id, mimeType)'}).execute(function(resp){
       // We got an error object back so we can check it out.
       if (resp && resp.error) {
@@ -99,8 +99,14 @@ dmp.drive.listFiles = function(folderId, callback, retryCounter, items, folders)
  *    been retried previously call.
  */
 dmp.drive.getFileUrl = function(fileId, callback, retryCounter) {
-  gapi.client.load('drive', 'v2', function() {
-    gapi.client.drive.files.get({ 'supportsTeamDrives':"true",'fileId': fileId}).execute(function(resp){
+  gapi.client.load('drive', 'v3', function() {
+    gapi.client.drive.files.get({
+      'supportsTeamDrives':"true",
+      'fileId': fileId,
+      'fields':'webContentLink,properties,fullFileExtension,name',
+     // 'alt':'media'
+      
+    }).execute(function(resp){
       // We got an error object back so we can check it out.
       if (resp && resp.error) {
         console.log("Error while fetching the file's metadata: "
@@ -119,18 +125,31 @@ dmp.drive.getFileUrl = function(fileId, callback, retryCounter) {
           callback(null, null, resp.error, null, false, null, null, false);
         }
       // We have a good response
-      } else if (resp && resp.title) {
-        console.log("Got the File's URL: ", resp.downloadUrl);
-        var authedCallbackUrl = resp.downloadUrl + "&access_token="
+      } else if (resp )//&& resp.result.properties.songTitle)
+      {// && resp.properties.songTitle){// && resp.properties.songTitle) {
+        console.log("Got the File's URL: ", resp);
+        var authedCallbackUrl = resp.webContentLink;
+      /*  var authedCallbackUrl = resp.webContentLink + "&alt=media" + "&access_token="
             + encodeURIComponent(dmp.getAccessToken());
+      */
         console.log("File's URL w/ auth: ", authedCallbackUrl);
         console.log("File's Data: ", resp);
+        
+        try {
+          var songTitle = resp.properties["songTitle"];
+        }
+        catch(e) {
+          console.log("No songtitle found... using fileName instead!")
+          var songTitle = resp.name;
+          
+        }
+        console.log("De titel van dit nummer werd ingesteld op: " + songTitle)
         callback(authedCallbackUrl,
-            resp.title,
+            songTitle,
             null,
-            resp.fileExtension,
+            resp.fullFileExtension,
             resp.mimeType == dmp.drive.FOLDER_MIME_TYPE,
-            resp.thumbnailLink,
+            null,//resp.thumbnailLink,
             resp.md5Checksum,
             resp.mimeType == (dmp.playlist.PLAYLIST_MIME_TYPE + "." + dmp.APPLICATION_ID),
             resp.mimeType);
@@ -138,6 +157,7 @@ dmp.drive.getFileUrl = function(fileId, callback, retryCounter) {
       } else if (!retryCounter || retryCounter == 0){
         dmp.drive.getFileUrl(fileId, callback, 1);
         console.log("Gving it another try... :'(");
+        //------------------------------------------------------------------------------------------------!!!!!!!
       // We already retried so we simply call the callback with an error.
       } else {
         callback(null, null, {}, null, false, null, null, false);
@@ -147,7 +167,7 @@ dmp.drive.getFileUrl = function(fileId, callback, retryCounter) {
 };
 
 dmp.drive.aboutGet = function(callback, retryCounter) {
-  gapi.client.load('drive', 'v2', function() {
+  gapi.client.load('drive', 'v3', function() {
     gapi.client.drive.about.get({'fields': "user/emailAddress"}).execute(function(resp){
       // We got an error object back so we can check it out.
       if (resp && resp.error) {
@@ -183,7 +203,7 @@ dmp.drive.aboutGet = function(callback, retryCounter) {
 dmp.drive.uploadThumbnailFromUrl = function(fileId, albumUrl) {
 
   // Saving Thumb URL to properties because it can't be saved as base 64 due to XHR issues.
-  gapi.client.load('drive', 'v2', function() {
+  gapi.client.load('drive', 'v3', function() {
     var body = {
       'key' : 'albumCoverUrl',
       'value' : albumUrl,
@@ -234,7 +254,7 @@ function getBase64FromImTag(img) {
 }
 
 dmp.drive.uploadThumbnail = function(fileId, mimetype, base64Pic, retry){
-  gapi.client.load('drive', 'v2', function() {
+  gapi.client.load('drive', 'v3', function() {
     var urlSafeBase64Image =  dmp.drive.base64toBase64Url(base64Pic);
     var body = {'thumbnail': {'image': urlSafeBase64Image, 'mimeType': mimetype}};
     gapi.client.drive.files.patch({'fileId': fileId, 'resource': body}).execute(function(resp){
@@ -252,14 +272,16 @@ dmp.drive.base64toBase64Url = function(base64) {
 };
 
 dmp.drive.saveTagsInProperty = function(fileId, title, artist, md5) {
-  gapi.client.load('drive', 'v2', function() {
+ /* console.log("Saving tags in property......... ")
+  gapi.client.load('drive', 'v3', function() {
     var body = {
-      'key' : 'md5',
+      'key' : 'md5Checksum',
       'value' : md5,
       'visibility' : 'PRIVATE'
     };
-    var request = gapi.client.drive.properties.insert({
+    var request = gapi.client.drive.files.update({
       'fileId' : fileId,
+      'supportsTeamDrives':true,
       'resource' : body
     });
     request.execute(function(resp) {
@@ -274,8 +296,9 @@ dmp.drive.saveTagsInProperty = function(fileId, title, artist, md5) {
       'value' : title,
       'visibility' : 'PUBLIC'
     };
-    var request = gapi.client.drive.properties.insert({
+    var request = gapi.client.drive.files.update({
       'fileId' : fileId,
+       'supportsTeamDrives':true,
       'resource' : body
     });
     request.execute(function(resp) {
@@ -290,8 +313,9 @@ dmp.drive.saveTagsInProperty = function(fileId, title, artist, md5) {
       'value' : artist,
       'visibility' : 'PUBLIC'
     };
-    var request = gapi.client.drive.properties.insert({
+    var request = gapi.client.drive.files.update({
       'fileId' : fileId,
+       'supportsTeamDrives':true,
       'resource' : body
     });
     request.execute(function(resp) {
@@ -300,15 +324,18 @@ dmp.drive.saveTagsInProperty = function(fileId, title, artist, md5) {
         console.log(body);
       }
     });
-  });
+  });*/
 };
 
 dmp.drive.readTagsFromProperty = function(fileId, callback) {
-  gapi.client.load('drive', 'v2', function() {
-    var request = gapi.client.drive.properties.list({
+  gapi.client.load('drive', 'v3', function() {
+    var request = gapi.client.drive.files.get({
+      'supportsTeamDrives':true,
+      'fields':'properties',
       'fileId' : fileId
     });
     request.execute(function(resp) {
+      console.log("response =>>" + JSON.stringify(resp));
       if (!resp.items) {
         callback(null, null, null);
         if (resp.error) {

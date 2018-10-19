@@ -140,14 +140,14 @@ dmp.ui.createSongEntry = function(fileInfo, callback) {
         $(".artist", $("#file-" + fileInfo.id))
             .text("You are not authorized to read this file or the file does not exist.")
             .addClass("error").attr("colspan", "2");
-
+            console.log("ERROR THROWN " + JSON.stringify(error));
           if(ga) {
               ga('send', 'event', 'player', 'not_authorized');
           }
         $(".title", $("#file-" + fileInfo.id)).hide();
       } else if (error) {
         $(".artist", $("#file-" + fileInfo.id))
-            .text("There was an error reading the file: " + error.message)
+            .text("There was an error reading the file: " + JSON.stringify( error ))
             .addClass("error").attr("colspan", "2");
           if(ga) {
               ga('send', 'event', 'error', 'error_reading_file', error.message);
@@ -192,23 +192,31 @@ dmp.ui.buildPicker = function() {
     var videoMimeType = "video/mp4,video/x-mpeg,video/webm,video/x-flv";
 
     // Search Songs in Drive View.
-    var view = new google.picker.DocsView().setEnableTeamDrives(true);
+    var view = new google.picker.DocsView();
     view.setLabel("🔍\u00A0Search\u00A0Audio\u00A0Files");
     view.setMimeTypes(supportedMimeType);
     view.setMode(google.picker.DocsViewMode.LIST);
 
     // Picker allowing users to browse folders.
-    var view2 = new google.picker.DocsView();
-    view2.setLabel("📂\u00A0My\u00A0Drive");
+    var view2 = new google.picker.DocsView().setEnableTeamDrives(true);
+    view2.setLabel("📂\u00A0TEAM\u00A0DRIVE");
     view2.setIncludeFolders(true);
-    view2.setParent("root");
+    //view2.setParent("root");
     view2.setMimeTypes(supportedMimeType + "," + videoMimeType);
     view2.setMode(google.picker.DocsViewMode.LIST);
     view2.setSelectFolderEnabled(dmp.testUser);
-
-  // Recently selected items view.
-  var view3 = new google.picker.View(google.picker.ViewId.RECENTLY_PICKED);
-  view3.setLabel("🕣\u00A0Recently\u00A0Selected");
+    
+    
+    // Picker allowing users to browse folders.
+    var view3 = new google.picker.DocsView().setEnableTeamDrives(true);
+    view3.setLabel("📂\u00A0My\u00A0Drive");
+    view3.setIncludeFolders(true);
+    view3.setParent("root");
+    view3.setMimeTypes(supportedMimeType + "," + videoMimeType);
+    view3.setMode(google.picker.DocsViewMode.LIST);
+    view3.setSelectFolderEnabled(dmp.testUser);
+    
+  
 
   // Open Playlist in Drive View.
   var view4 = new google.picker.DocsView();
@@ -243,9 +251,9 @@ dmp.ui.buildPicker = function() {
     newPickerBuilder.addView(customFolderView);
   }
 
-  // Create a new VIEW 
+  // Create a new VIEW
   /* (google team drives)
-  PickerBuilder.enableFeature(Feature)	Enable a picker feature. 
+  PickerBuilder.enableFeature(Feature)	Enable a picker feature.
   FEATURE = google.picker.Feature.SUPPORT_TEAM_DRIVES
   */
   

@@ -57,10 +57,11 @@ dmp.playlist.creatingNew = false;
  * Creates a new Playlist file in Drive.
  */
 dmp.playlist.createNewPlaylist = function() {
-  dmp.playlist.creatingNew = true;
+  alert("Not yet supported! Bookmark the current page...");
+ /* dmp.playlist.creatingNew = true;
   $("#hiderTrans").show();
-  gapi.client.load('drive', 'v2', function() {
-    gapi.client.drive.files.insert({
+  gapi.client.load('drive', 'v3', function() {
+    gapi.client.drive.files.create({
       'resource': {
         mimeType: dmp.playlist.PLAYLIST_MIME_TYPE,
         title: dmp.playlist.NEW_PLAYLIST_FILE_NAME
@@ -70,16 +71,17 @@ dmp.playlist.createNewPlaylist = function() {
 
     if(ga) {
         ga('send', 'event', 'playlist', 'create');
-    }
+    }*/
 };
 
 
 dmp.playlist.loadPlaylist = function(file) {
-  dmp.playlist.fileId = file.id;
+  /*dmp.playlist.fileId = file.id;
+  console.log(">>>>>>> PLAYLIST ID " + file.id)
   $("#hiderTrans").show();
-  gapi.load('drive-realtime', function() {
+  gapi.client.load('drive','v3', function() {
     dmp.playlist.fileId = file.id;
-    gapi.drive.realtime.load(file.id,
+    gapi.client.drive.files.get(file.id),
         dmp.playlist.onPlaylistLoaded,
         dmp.playlist.initializeModel,
         dmp.playlist.handleErrors);
@@ -87,7 +89,7 @@ dmp.playlist.loadPlaylist = function(file) {
 
     if (ga) {
         ga('send', 'event', 'playlist', 'load');
-    }
+    }*/
 };
 
 
@@ -163,7 +165,7 @@ dmp.playlist.onPlaylistLoaded = function(doc) {
 dmp.playlist.renamePlaylistFromInput = function() {
   $('#playlistNameContainer').attr('disabled', '');
   var body = {'title': $('#playlistNameContainer').val()};
-  var renameRequest = gapi.client.drive.files.patch({
+  var renameRequest = gapi.client.drive.files.update({
     'fileId' : dmp.playlist.fileId,
     'resource' : body
   });

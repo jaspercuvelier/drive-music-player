@@ -36,10 +36,10 @@ dmp.folderLabel = undefined;
 dmp.testUser = false;
 
 /** The Drive application ID. */
-dmp.APPLICATION_ID = "543871781652";
+dmp.APPLICATION_ID = "432174916750";
 
 /** The app's Client ID. */
-dmp.CLIENT_ID = "543871781652.apps.googleusercontent.com";
+dmp.CLIENT_ID = "432174916750-9u0v5m4vg9f59ueircqlmo5qupsec2nf.apps.googleusercontent.com";
 
 /** Some Google OAuth 2.0 scopes. */
 dmp.DRIVE_FILE_SCOPE = "https://www.googleapis.com/auth/drive.file";

@@ -207,6 +207,7 @@ dmp.player.playFile = function(songId, stop, tracktime) {
   dmp.playlist.setCurrentSongId(songId);
   dmp.drive.getFileUrl(songId,
       function(fileUrl, fileName, error, fileExtension, isFolder, thumb, md5, isPlaylist, mimeType) {
+        console.log("file URL doorgegeven aan de player =" + fileUrl);
         if (error) {
           dmp.player.playNext(null, true);
         } else if(isFolder) {
@@ -214,6 +215,7 @@ dmp.player.playFile = function(songId, stop, tracktime) {
         } else if(isPlaylist) {
           // Do nothing as if it is a playlist we're likely to be currently loading its children.
         } else {
+          //console.log("'t is a liedje!");
           $(".playing").removeClass("playing");
           $("#file-" + songId).addClass("playing");
           if (dmp.player.currentlyLoaded != fileUrl) {
@@ -277,6 +279,7 @@ dmp.player.playFile = function(songId, stop, tracktime) {
             dmp.player.currentlyLoaded = fileUrl;
             dmp.player.currentExtenstion = fileExtension;
             dmp.player.currentMime = mimeType;
+            console.log("SET MEDIA VALUE" + JSON.stringify(setMediaValue));
             $("#jqueryPlayerContainer").jPlayer("setMedia", setMediaValue);
           }
 
