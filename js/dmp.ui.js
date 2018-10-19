@@ -222,14 +222,16 @@ dmp.ui.buildPicker = function() {
     view3.setSelectFolderEnabled(dmp.testUser);
 
 
-
+    // Recently selected items view.
+    var view4 = new google.picker.View(google.picker.ViewId.RECENTLY_PICKED);
+    view4.setLabel("🕣\u00A0Recently\u00A0Selected");
   // Open Playlist in Drive View.
-  var view4 = new google.picker.DocsView();
+  /*var view4 = new google.picker.DocsView();
   view4.setLabel("📄\u00A0Open\u00A0a\u00A0Playlist");
   view4.setIncludeFolders(false);
   view4.setMimeTypes(dmp.playlist.PLAYLIST_MIME_TYPE + "." + dmp.APPLICATION_ID);
   view4.setMode(google.picker.DocsViewMode.LIST);
-
+*/
   /*  // Picker allowing users to browse TEAMDRIVES
     var view5 = new google.picker.DocsView();
     view5.setLabel("📂TEAMDRIVE");
@@ -317,6 +319,7 @@ dmp.ui.pickerCallback = function(data) {
  * playlist is empty or not.
  */
 dmp.ui.toggleEmptyPlaylist = function() {
+
   if (dmp.playlist.audioList.length > 0) {
     $("#empty").hide();
   } else {

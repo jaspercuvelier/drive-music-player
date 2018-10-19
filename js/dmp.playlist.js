@@ -57,7 +57,7 @@ dmp.playlist.creatingNew = false;
  * Creates a new Playlist file in Drive.
  */
 dmp.playlist.createNewPlaylist = function() {
-  alert("Not yet supported! Bookmark the current page...");
+  alert("Playlist creation was disabled. Hint: Bookmark this page instead!");
  /* dmp.playlist.creatingNew = true;
   $("#hiderTrans").show();
   gapi.client.load('drive', 'v3', function() {
@@ -97,7 +97,7 @@ dmp.playlist.loadPlaylist = function(file) {
  * Handles errors thrown by the Realtime API.
  */
 dmp.playlist.handleErrors = function(e) {
-  if(e.type == gapi.drive.realtime.ErrorType.TOKEN_REFRESH_REQUIRED) {
+/*  if(e.type == gapi.drive.realtime.ErrorType.TOKEN_REFRESH_REQUIRED) {
     console.log("You have been signed out from your Google Account.");
   } else if(e.type == gapi.drive.realtime.ErrorType.NOT_FOUND) {
     alert("The file was not found. It does not exist or you do not have read access to the file.");
@@ -109,14 +109,14 @@ dmp.playlist.handleErrors = function(e) {
       if (e.isFatal) {
           window.setTimeout(location.reload, 500);
       }
-  }
+  }*/
 };
 
 /**
  * initializes the Realtime Model for new Playlists.
  */
 dmp.playlist.initializeModel = function(model) {
-
+/*
   var audioList = model.createList();
   audioList.pushAll(dmp.playlist.getAudioList());
   model.getRoot().set(dmp.playlist.AUDIO_LIST_FIELD_NAME, audioList);
@@ -127,13 +127,14 @@ dmp.playlist.initializeModel = function(model) {
 
   var fileName = model.createString();
   fileName.setText(dmp.playlist.NEW_PLAYLIST_FILE_NAME);
-  model.getRoot().set(dmp.playlist.FILE_NAME_FIELD_NAME, fileName);
+  model.getRoot().set(dmp.playlist.FILE_NAME_FIELD_NAME, fileName);*/
 };
 
 /**
  * initializes the Realtime Model for new Playlists.
  */
 dmp.playlist.onPlaylistLoaded = function(doc) {
+  /*
   dmp.playlist.realtimeDoc = doc;
   dmp.playlist.audioList = doc.getModel().getRoot().get(dmp.playlist.AUDIO_LIST_FIELD_NAME);
   dmp.playlist.fileName = doc.getModel().getRoot().get(dmp.playlist.FILE_NAME_FIELD_NAME);
@@ -156,13 +157,14 @@ dmp.playlist.onPlaylistLoaded = function(doc) {
   $("#hiderTrans").hide();
   dmp.ui.toggleEmptyPlaylist();
   dmp.url.makePrettyUrl();
-
+*/
 };
 
 /**
  * Changes the name of the Playlist Drive file.
  */
 dmp.playlist.renamePlaylistFromInput = function() {
+  /*
   $('#playlistNameContainer').attr('disabled', '');
   var body = {'title': $('#playlistNameContainer').val()};
   var renameRequest = gapi.client.drive.files.update({
@@ -177,13 +179,14 @@ dmp.playlist.renamePlaylistFromInput = function() {
 
     if(ga) {
         ga('send', 'event', 'playlist', 'rename');
-    }
+    }*/
 };
 
 /**
  * Stops using a playlist and reverts back to a regular list.
  */
 dmp.playlist.closePlaylist = function() {
+  /*
   $("#playListControl").removeClass("show");
   dmp.playlist.currentSongId = dmp.playlist.currentSongId.toString();
   dmp.playlist.audioList = dmp.playlist.audioList.asArray();
@@ -195,13 +198,14 @@ dmp.playlist.closePlaylist = function() {
 
     if(ga) {
         ga('send', 'event', 'playlist', 'close');
-    }
+    }*/
 };
 
 
 // Accessors
 
 dmp.playlist.getCurrentSongId = function() {
+
   if (dmp.playlist.currentSongId && dmp.playlist.currentSongId.toString) {
     return dmp.playlist.currentSongId.toString();
   } else if (dmp.playlist.currentSongId && dmp.playlist.currentSongId instanceof String) {
@@ -220,6 +224,7 @@ dmp.playlist.setCurrentSongId = function(newSongId) {
 };
 
 dmp.playlist.getAudioList = function() {
+
   if (dmp.playlist.audioList && dmp.playlist.audioList.asArray) {
     return dmp.playlist.audioList.asArray();
   } else if (dmp.playlist.audioList) {
@@ -234,6 +239,7 @@ dmp.playlist.getCurrentSongIndex = function() {
 };
 
 dmp.playlist.getSongIndex = function(songId) {
+
   if (!songId) {
     return -1;
   }
