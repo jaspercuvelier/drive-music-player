@@ -154,9 +154,13 @@ dmp.ui.createSongEntry = function(fileInfo, callback) {
           }
         $(".title", $("#file-" + fileInfo.id)).hide();
       } else if (fileInfo.md5 && fileInfo.md5 == md5) { // If we already have all the tags cached in the playlist we display them right away.
+
         dmp.ui.displayID3Tags(fileInfo.id, fileInfo.title, fileInfo.artist, fileName, thumbnailUrl);
       } else if (fileUrl) { // No tags cached in the playlist we'll extract them from the file.
+
         dmp.drive.readTagsFromProperty(fileInfo.id, function(title, artist, savedMd5, albumCoverUrl){
+          console.log("READING TAGz...")
+          dmp.ui.displayID3Tags(fileInfo.id, title, artist, fileName, null);
           if (savedMd5 && savedMd5 == md5) {
             if (!thumbnailUrl) {
               // Since Last FM album RULs can rotate we need to re-query each time.
@@ -176,6 +180,7 @@ dmp.ui.createSongEntry = function(fileInfo, callback) {
       }
     }
     if(callback) {
+    //  console.log("Callback wordt vanaf hier geroepen!")
       callback();
     }
   });
@@ -205,8 +210,8 @@ dmp.ui.buildPicker = function() {
     view2.setMimeTypes(supportedMimeType + "," + videoMimeType);
     view2.setMode(google.picker.DocsViewMode.LIST);
     view2.setSelectFolderEnabled(dmp.testUser);
-    
-    
+
+
     // Picker allowing users to browse folders.
     var view3 = new google.picker.DocsView().setEnableTeamDrives(true);
     view3.setLabel("📂\u00A0My\u00A0Drive");
@@ -215,8 +220,8 @@ dmp.ui.buildPicker = function() {
     view3.setMimeTypes(supportedMimeType + "," + videoMimeType);
     view3.setMode(google.picker.DocsViewMode.LIST);
     view3.setSelectFolderEnabled(dmp.testUser);
-    
-  
+
+
 
   // Open Playlist in Drive View.
   var view4 = new google.picker.DocsView();
@@ -234,8 +239,8 @@ dmp.ui.buildPicker = function() {
     view5.setMode(google.picker.DocsViewMode.LIST);
  //   view5.setSelectFolderEnabled(dmp.testUser);
   */
-  
-  
+
+
   var newPickerBuilder = dmp.useSandbox ? new google.picker.PickerBuilder("https://docs.sandbox.google.com/picker")
       : new google.picker.PickerBuilder();
 
@@ -256,8 +261,8 @@ dmp.ui.buildPicker = function() {
   PickerBuilder.enableFeature(Feature)	Enable a picker feature.
   FEATURE = google.picker.Feature.SUPPORT_TEAM_DRIVES
   */
-  
-  
+
+
   var newPicker = newPickerBuilder
   .enableFeature(google.picker.Feature.MULTISELECT_ENABLED)
   .enableFeature(google.picker.Feature.SUPPORT_TEAM_DRIVES)

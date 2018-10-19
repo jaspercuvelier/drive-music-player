@@ -103,9 +103,8 @@ dmp.drive.getFileUrl = function(fileId, callback, retryCounter) {
     gapi.client.drive.files.get({
       'supportsTeamDrives':"true",
       'fileId': fileId,
-      'fields':'webContentLink,properties,fullFileExtension,name',
-     // 'alt':'media'
-      
+      'fields':'webContentLink,properties,fullFileExtension,name,md5Checksum'
+
     }).execute(function(resp){
       // We got an error object back so we can check it out.
       if (resp && resp.error) {
@@ -132,27 +131,29 @@ dmp.drive.getFileUrl = function(fileId, callback, retryCounter) {
       /*  var authedCallbackUrl = resp.webContentLink + "&alt=media" + "&access_token="
             + encodeURIComponent(dmp.getAccessToken());
       */
-        console.log("File's URL w/ auth: ", authedCallbackUrl);
+      //  console.log("File's URL w/ auth: ", authedCallbackUrl);
         console.log("File's Data: ", resp);
-        
+
         try {
           var songTitle = resp.properties["songTitle"];
         }
         catch(e) {
           console.log("No songtitle found... using fileName instead!")
           var songTitle = resp.name;
-          
+
         }
-        console.log("De titel van dit nummer werd ingesteld op: " + songTitle)
+        console.log("Callback wordt geroepen! " + songTitle + resp)
         callback(authedCallbackUrl,
             songTitle,
-            null,
+            null,//resp.properties["songArtist"],
             resp.fullFileExtension,
             resp.mimeType == dmp.drive.FOLDER_MIME_TYPE,
             null,//resp.thumbnailLink,
             resp.md5Checksum,
             resp.mimeType == (dmp.playlist.PLAYLIST_MIME_TYPE + "." + dmp.APPLICATION_ID),
-            resp.mimeType);
+            resp.mimeType,
+            resp
+            );
       // The return object has no title, maybe it;s an error so we retry.
       } else if (!retryCounter || retryCounter == 0){
         dmp.drive.getFileUrl(fileId, callback, 1);
@@ -201,7 +202,7 @@ dmp.drive.aboutGet = function(callback, retryCounter) {
 
 // WILL NOT WORK IF CROSS ORIGIN IS NOT ENABLED ON THE IMAGE URL.
 dmp.drive.uploadThumbnailFromUrl = function(fileId, albumUrl) {
-
+ /*
   // Saving Thumb URL to properties because it can't be saved as base 64 due to XHR issues.
   gapi.client.load('drive', 'v3', function() {
     var body = {
@@ -231,7 +232,7 @@ dmp.drive.uploadThumbnailFromUrl = function(fileId, albumUrl) {
         dmp.drive.uploadThumbnail(fileId, 'image/png', base64Pic);
       } catch (e) {}
     };
-  }
+  }*/
 };
 
 function getBase64FromImTag(img) {
@@ -254,7 +255,8 @@ function getBase64FromImTag(img) {
 }
 
 dmp.drive.uploadThumbnail = function(fileId, mimetype, base64Pic, retry){
-  gapi.client.load('drive', 'v3', function() {
+ /*
+   gapi.client.load('drive', 'v3', function() {
     var urlSafeBase64Image =  dmp.drive.base64toBase64Url(base64Pic);
     var body = {'thumbnail': {'image': urlSafeBase64Image, 'mimeType': mimetype}};
     gapi.client.drive.files.patch({'fileId': fileId, 'resource': body}).execute(function(resp){
@@ -263,7 +265,7 @@ dmp.drive.uploadThumbnail = function(fileId, mimetype, base64Pic, retry){
         dmp.drive.uploadThumbnail(fileId, mimetype, base64Pic, true);
       }
     });
-  });
+  }); */
 };
 
 
@@ -331,12 +333,12 @@ dmp.drive.readTagsFromProperty = function(fileId, callback) {
   gapi.client.load('drive', 'v3', function() {
     var request = gapi.client.drive.files.get({
       'supportsTeamDrives':true,
-      'fields':'properties',
+      'fields':'properties,md5Checksum',
       'fileId' : fileId
     });
     request.execute(function(resp) {
       console.log("response =>>" + JSON.stringify(resp));
-      if (!resp.items) {
+      if (!resp.properties) {
         callback(null, null, null);
         if (resp.error) {
           console.log(resp.error);
@@ -346,19 +348,19 @@ dmp.drive.readTagsFromProperty = function(fileId, callback) {
         var artist = null;
         var md5 = null;
         var coverUrl = null;
-        for(var index in resp.items) {
-          if (resp.items[index] && resp.items[index].key) {
-            if (resp.items[index].key == "md5") {
-              md5 = resp.items[index].value;
-            } else if (resp.items[index].key == "songTitle") {
-              title = resp.items[index].value;
-            } else if (resp.items[index].key == "songArtist") {
-              artist = resp.items[index].value;
-            } else if (resp.items[index].key == "albumCoverUrl") {
-              coverUrl = resp.items[index].value;
+        var md5 = resp.md5Checksum
+        for(var index in resp.properties) {
+          if (resp.properties[index]) {
+             if (index == "songTitle") {
+              title = resp.properties[index];
+            } else if (index == "songArtist") {
+              artist = resp.properties[index];
+            } else if (index == "albumCoverUrl") {
+              coverUrl = resp.properties[index];
             }
           }
         }
+        console.log("Retrieved TAGS = %s,%s,%s",title,artist,coverUrl);
         callback(title, artist, md5, coverUrl);
       }
     });
