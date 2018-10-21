@@ -68,8 +68,8 @@ dmp.init = function() {
   // First make sure we are authorized to access the Drive API.
   var scope = [
     dmp.DRIVE_FILE_SCOPE,
-    dmp.DRIVE_INSTALL_SCOPE,
-    dmp.OPENID_SCOPE
+  //  dmp.DRIVE_INSTALL_SCOPE,
+    //dmp.OPENID_SCOPE
   ].join(' ');
 
   gapi.auth2.init({
