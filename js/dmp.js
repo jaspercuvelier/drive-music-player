@@ -43,8 +43,7 @@ dmp.CLIENT_ID = "432174916750-9u0v5m4vg9f59ueircqlmo5qupsec2nf.apps.googleuserco
 
 /** Some Google OAuth 2.0 scopes. */
 dmp.DRIVE_FILE_SCOPE = "https://www.googleapis.com/auth/drive.file";
-dmp.DRIVE_INSTALL_SCOPE = "https://www.googleapis.com/auth/drive.install";
-dmp.OPENID_SCOPE = "openid";
+
 
 // Called once Google APIs library has loaded.
 function init() {
@@ -67,9 +66,7 @@ dmp.init = function() {
   }
   // First make sure we are authorized to access the Drive API.
   var scope = [
-    dmp.DRIVE_FILE_SCOPE,
-  //  dmp.DRIVE_INSTALL_SCOPE,
-    //dmp.OPENID_SCOPE
+    dmp.DRIVE_FILE_SCOPE
   ].join(' ');
 
   gapi.auth2.init({
