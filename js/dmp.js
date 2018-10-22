@@ -42,7 +42,7 @@ dmp.APPLICATION_ID = "432174916750";
 dmp.CLIENT_ID = "432174916750-9u0v5m4vg9f59ueircqlmo5qupsec2nf.apps.googleusercontent.com";
 
 /** Some Google OAuth 2.0 scopes. */
-dmp.DRIVE_FILE_SCOPE = "https://www.googleapis.com/auth/drive.file";
+dmp.DRIVE_FILE_SCOPE = "https://www.googleapis.com/auth/drive.readonly";
 
 // Called once Google APIs library has loaded.
 function init() {
